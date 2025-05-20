@@ -9,7 +9,7 @@
    <item>
     <widget class="QLabel" name="label_info">
      <property name="text">
-      <string>This tool generates crown polygons based on directional crown diameters (N, E, S, W). If features are selected, only those will be processed.</string>
+      <string>This tool generates crown polygons based on directional crown diameters (N, E, S, W). If features are selected, only those will be processed. Please select a projected CRS with meter units.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -24,62 +24,49 @@
      <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
        <widget class="QLabel">
-        <property name="text">
-         <string>North diameter field</string>
-        </property>
+        <property name="text"><string>North diameter field</string></property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="field_north"/>
-      </item>
+      <item row="0" column="1"><widget class="QComboBox" name="field_north"/></item>
       <item row="1" column="0">
        <widget class="QLabel">
-        <property name="text">
-         <string>East diameter field</string>
-        </property>
+        <property name="text"><string>East diameter field</string></property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="field_east"/>
-      </item>
+      <item row="1" column="1"><widget class="QComboBox" name="field_east"/></item>
       <item row="2" column="0">
        <widget class="QLabel">
-        <property name="text">
-         <string>South diameter field</string>
-        </property>
+        <property name="text"><string>South diameter field</string></property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="field_south"/>
-      </item>
+      <item row="2" column="1"><widget class="QComboBox" name="field_south"/></item>
       <item row="3" column="0">
        <widget class="QLabel">
-        <property name="text">
-         <string>West diameter field</string>
-        </property>
+        <property name="text"><string>West diameter field</string></property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="field_west"/>
-      </item>
+      <item row="3" column="1"><widget class="QComboBox" name="field_west"/></item>
       <item row="4" column="0">
        <widget class="QLabel">
-        <property name="text">
-         <string>Target CRS</string>
-        </property>
+        <property name="text"><string>Target CRS</string></property>
        </widget>
       </item>
       <item row="4" column="1">
        <widget class="QgsProjectionSelectionWidget" name="crs_selector"/>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QLabel" name="label_crs_warning">
+        <property name="text"><string/></property>
+        <property name="visible"><bool>false</bool></property>
+        <property name="styleSheet"><string>color: red;</string></property>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="button_box">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
