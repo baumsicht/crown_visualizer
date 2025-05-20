@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import QAction
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsProject, QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer,
-    QgsField, QgsCoordinateReferenceSystem, QgsCoordinateTransform
+    QgsField, QgsCoordinateReferenceSystem, QgsCoordinateTransform,
+    QgsUnitTypes
 )
 from .treesta_crown_visualizer_dialog import TreestaCrownVisualizerDialog
 
@@ -31,7 +32,7 @@ class TreestaCrownVisualizer:
 
         dialog = TreestaCrownVisualizerDialog()
 
-        # Lade alle Punkt-Vektorlayer
+        # Lade Punkt-Vektorlayer
         layers = [
             l for l in QgsProject.instance().mapLayers().values()
             if isinstance(l, QgsVectorLayer) and l.geometryType() == 0
@@ -66,13 +67,15 @@ class TreestaCrownVisualizer:
 
             target_crs = dialog.crs_selector.crs()
 
-            # ✅ Prüfe, ob das CRS metrisch ist (Einheit: Meter)
-            if target_crs.mapUnits() != QgsCoordinateReferenceSystem.Meters:
-                self.iface.messageBar().pushCritical(
-                    "Treesta",
-                    f"Selected CRS ({target_crs.authid()}) is not metric. Please choose a CRS with meter units."
-                )
-                return
+            # ✅ Einheit prüfen (Meter) und Warnung anzeigen
+            if target_crs.mapUnits() != QgsUnitTypes.DistanceMeters:
+                warning = f"Selected CRS ({target_crs.authid()}) is not metric. Please choose one with meter units."
+                dialog.label_crs_warning.setText(warning)
+                dialog.label_crs_warning.setStyleSheet("color: red")
+                dialog.label_crs_warning.setVisible(True)
+                return  # Dialog bleibt geöffnet
+            else:
+                dialog.label_crs_warning.setVisible(False)
 
             self.create_crown_layer(selected_layer, fields, target_crs)
 

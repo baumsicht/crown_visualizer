@@ -1,9 +1,12 @@
 [general]
 name=Treesta Crown Visualizer
-description=Generates crown polygons from tree crown diameters
-version=1.0
-qgisMinimumVersion=3.0
-author=Treesta
-email=hello@mail.treesta.net
-icon=treesta_crown_icon.png
+description=This tool generates crown polygons based on directional crown diameters (N, E, S, W). If features are selected, only those will be processed. 
+version=0.1
+qgisMinimumVersion=3.40
+author=Baumsicht
+email=mail@baumsicht.de
+homepage:https://treesta.net
+about=Generates realistic crown polygons based on directional crown diameters stored in tree point data.
+tracker=https://github.com/baumsicht/crown_visualizer/issues
+repository=https://github.com/baumsicht/crown_visualizer
 
