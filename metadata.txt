@@ -1,0 +1,9 @@
+[general]
+name=Treesta Crown Visualizer
+description=Generates crown polygons from tree crown diameters
+version=1.0
+qgisMinimumVersion=3.0
+author=Treesta
+email=hello@mail.treesta.net
+icon=treesta_crown_icon.png
+

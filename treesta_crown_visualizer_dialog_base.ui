@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TreestaCrownVisualizerDialogBase</class>
+ <widget class="QDialog" name="TreestaCrownVisualizerDialogBase">
+  <property name="windowTitle">
+   <string>Treesta Crown Visualizer</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_info">
+     <property name="text">
+      <string>This tool generates crown polygons based on directional crown diameters (N, E, S, W). If features are selected, only those will be processed.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="layer_combo"/>
+   </item>
+   <item>
+    <widget class="QWidget" name="form_container">
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel">
+        <property name="text">
+         <string>North diameter field</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="field_north"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel">
+        <property name="text">
+         <string>East diameter field</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="field_east"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel">
+        <property name="text">
+         <string>South diameter field</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="field_south"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel">
+        <property name="text">
+         <string>West diameter field</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="field_west"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel">
+        <property name="text">
+         <string>Target CRS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QgsProjectionSelectionWidget" name="crs_selector"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="button_box">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsProjectionSelectionWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsprojectionselectionwidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
