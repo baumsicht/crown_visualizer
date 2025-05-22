@@ -47,10 +47,10 @@ class TreestaCrownVisualizer:
             for fcombo in [dialog.field_north, dialog.field_east, dialog.field_south, dialog.field_west]:
                 fcombo.clear()
                 fcombo.addItems([f.name() for f in fields])
-            dialog.field_north.setCurrentText("crown_diameter_1")
-            dialog.field_east.setCurrentText("crown_diameter_2")
-            dialog.field_south.setCurrentText("crown_diameter_3")
-            dialog.field_west.setCurrentText("crown_diameter_4")
+            dialog.field_north.setCurrentText("crown_radius_1")
+            dialog.field_east.setCurrentText("crown_radius_2")
+            dialog.field_south.setCurrentText("crown_radius_3")
+            dialog.field_west.setCurrentText("crown_radius_4")
 
         if dialog.exec_():
             selected_layer = layer_map.get(dialog.layer_combo.currentText())
@@ -97,7 +97,7 @@ class TreestaCrownVisualizer:
     def create_crown_layer(self, layer, field_map, target_crs):
         crown_layer = QgsVectorLayer("Polygon?crs=" + target_crs.authid(), "Crown", "memory")
         provider = crown_layer.dataProvider()
-        provider.addAttributes([QgsField("id", QVariant.Int)])
+        provider.addAttributes([QgsField(name="id", type=QVariant.Int, typeName="Integer")])
         crown_layer.updateFields()
 
         source_crs = layer.crs()
