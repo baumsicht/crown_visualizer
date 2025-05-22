@@ -1,21 +1,21 @@
 # crown_visualizer
-Plugin for QGIS to generate realisitic crown diameters
+Plugin for QGIS to generate realisitic crown radiuses
 
 ![turnthis](https://github.com/user-attachments/assets/63da8681-0e9f-4493-81ba-a41fb7fd59cd)
 ![intothis](https://github.com/user-attachments/assets/f96d5725-4fd2-4ebb-ba7c-9f92006ab039)
 
 
 Purpose:
-This QGIS plugin generates realistic crown polygons based on directional crown diameters stored in tree point data.
+This QGIS plugin generates realistic crown polygons based on directional crown radiuses stored in tree point data.
 
 How It Works:
 Select the input point layer
 
-The layer must contain trees with known crown diameters in 4 directions: North, East, South, West.
+The layer must contain trees with known crown radiuses in 4 directions: North, East, South, West.
 
 Select the diameter fields
 
-Default field names: crown_diameter_1 to crown_diameter_4
+Default field names: crown_radius_1 to crown_radius_4
 
 You can change them if your layer uses different field names.
 
@@ -35,7 +35,7 @@ Run the tool
 
 The plugin creates a new temporary layer called "Crown" with the resulting crown polygons.
 
-Each crown polygon is smoothed using cosine interpolation between the four directional diameters.
+Each crown polygon is smoothed using cosine interpolation between the four directional radiuses.
 
 Output:
 
