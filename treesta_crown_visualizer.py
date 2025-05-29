@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import QAction
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
     QgsProject, QgsFeature, QgsGeometry, QgsPointXY, QgsVectorLayer,
-    QgsField, QgsCoordinateReferenceSystem, QgsCoordinateTransform,
-    QgsUnitTypes
+    QgsField, QgsCoordinateReferenceSystem, QgsProcessingFeedback
 )
 from .treesta_crown_visualizer_dialog import TreestaCrownVisualizerDialog
+import processing
 
 class TreestaCrownVisualizer:
     def __init__(self, iface):
@@ -19,7 +19,6 @@ class TreestaCrownVisualizer:
         icon_path = os.path.join(os.path.dirname(__file__), "treesta_crown_icon.png")
         self.action = QAction(QIcon(icon_path), "Treesta Crown Visualizer", self.iface.mainWindow())
         self.action.triggered.connect(self.run)
-
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu("Treesta Tools", self.action)
 
@@ -28,19 +27,17 @@ class TreestaCrownVisualizer:
         self.iface.removePluginMenu("Treesta Tools", self.action)
 
     def run(self):
-        from qgis.core import QgsVectorLayer
-
         dialog = TreestaCrownVisualizerDialog()
 
-        # Lade Punkt-Vektorlayer
+        # Punktlayer sammeln
         layers = [
             l for l in QgsProject.instance().mapLayers().values()
             if isinstance(l, QgsVectorLayer) and l.geometryType() == 0
         ]
         dialog.layer_combo.clear()
         dialog.layer_combo.addItems([layer.name() for layer in layers])
-
         layer_map = {layer.name(): layer for layer in layers}
+
         if "Trees" in layer_map:
             dialog.layer_combo.setCurrentText("Trees")
             fields = layer_map["Trees"].fields()
@@ -53,10 +50,25 @@ class TreestaCrownVisualizer:
             dialog.field_west.setCurrentText("crown_radius_4")
 
         if dialog.exec_():
-            selected_layer = layer_map.get(dialog.layer_combo.currentText())
-            if not selected_layer:
+            source_layer = layer_map.get(dialog.layer_combo.currentText())
+            if not source_layer:
                 self.iface.messageBar().pushWarning("Treesta", "No valid layer selected.")
                 return
+
+            # Ziel-KBS fix setzen (metrisch)
+            target_crs = QgsCoordinateReferenceSystem("EPSG:25832")
+
+            # Reprojektion durchführen
+            result = processing.run(
+                "native:reprojectlayer",
+                {
+                    'INPUT': source_layer,
+                    'TARGET_CRS': target_crs,
+                    'OUTPUT': 'memory:'
+                },
+                feedback=QgsProcessingFeedback()
+            )
+            layer = result['OUTPUT']
 
             fields = {
                 0: dialog.field_north.currentText(),
@@ -65,19 +77,7 @@ class TreestaCrownVisualizer:
                 270: dialog.field_west.currentText()
             }
 
-            target_crs = dialog.crs_selector.crs()
-
-            # ✅ Einheit prüfen (Meter) und Warnung anzeigen
-            if target_crs.mapUnits() != QgsUnitTypes.DistanceMeters:
-                warning = f"Selected CRS ({target_crs.authid()}) is not metric. Please choose one with meter units."
-                dialog.label_crs_warning.setText(warning)
-                dialog.label_crs_warning.setStyleSheet("color: red")
-                dialog.label_crs_warning.setVisible(True)
-                return  # Dialog bleibt geöffnet
-            else:
-                dialog.label_crs_warning.setVisible(False)
-
-            self.create_crown_layer(selected_layer, fields, target_crs)
+            self.create_crown_layer(layer, fields)
 
     def interpolierter_radius(self, radii, winkel):
         winkel = winkel % 360
@@ -94,14 +94,11 @@ class TreestaCrownVisualizer:
                 return (1 - t) * r1 + t * r2
         return radii[0]
 
-    def create_crown_layer(self, layer, field_map, target_crs):
-        crown_layer = QgsVectorLayer("Polygon?crs=" + target_crs.authid(), "Crown", "memory")
+    def create_crown_layer(self, layer, field_map):
+        crown_layer = QgsVectorLayer("Polygon?crs=EPSG:25832", "Crown", "memory")
         provider = crown_layer.dataProvider()
-        provider.addAttributes([QgsField(name="id", type=QVariant.Int, typeName="Integer")])
+        provider.addAttributes([QgsField("id", QVariant.Int)])
         crown_layer.updateFields()
-
-        source_crs = layer.crs()
-        transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
 
         features = layer.selectedFeatures()
         if not features:
@@ -111,26 +108,23 @@ class TreestaCrownVisualizer:
             geom = feature.geometry()
             if not geom or geom.isEmpty():
                 continue
+
             try:
-                center = transform.transform(geom.asPoint())
+                radii = {k: float(feature[field_map[k]]) for k in field_map}
             except Exception:
                 continue
 
-            try:
-                radii = {
-                    k: feature[field_map[k]] / 2 for k in [0, 90, 180, 270]
-                }
-            except Exception:
-                continue
-
+            center = geom.asPoint()  # bereits in EPSG:25832
             polygon_pts = []
+
             for angle in range(0, 360, 5):
                 r = self.interpolierter_radius(radii, angle)
                 rad = math.radians(angle)
                 x = center.x() + r * math.sin(rad)
                 y = center.y() + r * math.cos(rad)
                 polygon_pts.append(QgsPointXY(x, y))
-            polygon_pts.append(polygon_pts[0])
+
+            polygon_pts.append(polygon_pts[0])  # schließen
 
             poly = QgsFeature()
             poly.setGeometry(QgsGeometry.fromPolygonXY([polygon_pts]))
