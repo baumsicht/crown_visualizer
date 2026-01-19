@@ -1,7 +1,7 @@
 [general]
 name=Treesta Crown Visualizer
 description=This tool generates crown polygons based on directional crown radiuses (N, E, S, W). If features are selected, only those will be processed. 
-version=0.1.1
+version=0.1.3
 qgisMinimumVersion=3.40
 author=Baumsicht
 email=mail@baumsicht.de
